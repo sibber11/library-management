@@ -128,4 +128,15 @@ class MemberTest extends TestCase
         $response->assertRedirect(route('members.index'));
         $this->assertModelMissing($member);
     }
+
+    public function test_membership_can_be_extended()
+    {
+        $member = \App\Models\Member::factory()->create([
+            'membership_due_date' => now()->subMonths(1),
+        ]);
+        $this->assertEquals('Expired',$member->membership_status);
+        $member->extendMembership(2);
+        $this->assertEquals('Active',$member->membership_status);
+        $this->assertEquals(now()->addMonth()->format('d-M-Y'), $member->membership_due_date->format('d-M-Y'));
+    }
 }
