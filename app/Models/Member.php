@@ -47,7 +47,7 @@ class Member extends Model
     /**
      * increase the membership duration by the given number of months
      */
-    public function increaseMembershipDuration(int $months)
+    public function extendMembership(int $months)
     {
         $this->membership_due_date = $this->membership_due_date->addMonths($months);
         $this->save();
