@@ -35,4 +35,44 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the user has role.
+     */
+    public function role($role): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => $role,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is admin.
+     */
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is librarian.
+     */
+    public function librarian(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'librarian',
+        ]);
+    }
+
+    /**
+     * Indicate that the user is member.
+     */
+    public function member(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'member',
+        ]);
+    }
 }
