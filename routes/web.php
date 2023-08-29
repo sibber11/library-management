@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CheckOutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function (){
     Route::resource('books', BookController::class);
     Route::resource('members', MemberController::class);
+    Route::resource('check-outs', CheckOutController::class);
 });
 
 require __DIR__.'/auth.php';
