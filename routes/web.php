@@ -7,6 +7,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckOutController;
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function (){
     Route::resource('books', BookController::class);
     Route::resource('members', MemberController::class);
     Route::resource('check-outs', CheckOutController::class);
+    Route::resource('reservations', ReservationController::class)->except(['show', 'edit']);
 });
 
 require __DIR__.'/auth.php';

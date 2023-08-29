@@ -1,0 +1,76 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+
+class {{ class }} extends TestCase
+{
+    use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        // $this->actingAs(\App\Models\User::factory()->admin()->create());
+    }
+
+    public function test_table_can_be_created()
+    {
+        $this->assertTrue(true);
+    }
+
+    public function test_table_can_be_seeded()
+    {
+    }
+
+    /**
+     * test the index action
+     */
+    public function test_index()
+    {
+    }
+
+    /**
+     * test the create action
+     */
+    public function test_create()
+    {
+    }
+
+    /**
+     * test the store action
+     */
+    public function test_store()
+    {
+    }
+
+    /**
+     * test the show action
+     */
+    public function test_show()
+    {
+    }
+
+    /**
+     * test the edit action
+     */
+    public function test_edit()
+    {
+    }
+
+    /**
+     * test the update action
+     */
+    public function test_update()
+    {
+    }
+
+    /**
+     * test the destroy action
+     */
+    public function test_destroy()
+    {
+    }
+}
