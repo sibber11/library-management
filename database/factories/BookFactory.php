@@ -18,10 +18,10 @@ class BookFactory extends Factory
     {
         return [
             //todo: add genre_id
-            'title' => $this->faker->sentence,
+            'title' => $this->faker->sentence(3),
             'author' => $this->faker->name,
             'price' => $this->faker->numberBetween(100, 1000),
-            'available' => $this->faker->numberBetween(0, 10),
+            'available' => 1,
             'description' => $this->faker->paragraph,
             'published_at' => $this->faker->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'created_at' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d H:i:s'),

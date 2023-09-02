@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class BookController extends Controller
@@ -12,10 +13,16 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $books = Book::latest()
+        ->when($request->search, function($query, $search){
+            $query->where('title', 'LIKE', "%{$search}%")
+            ->orWhere('author', 'LIKE', "%{$search}%");
+        })->paginate()->withQueryString();
+
         return Inertia::render('Admin/Book/Index', [
-            'books' => Book::paginate(),
+            'books' => $books,
         ]);
     }
 
@@ -41,7 +48,10 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        //todo: show book
+        return Inertia::render('Admin/Book/Show', [
+            'book' => $book,
+            'checkouts' => $book->checkouts()->latest()->with('member.user')->paginate(5)->withQueryString(),
+        ]);
     }
 
     /**
@@ -49,6 +59,7 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
+        $book->makeVisible('price');
         return Inertia::render('Admin/Book/Fields',[
             'book' => $book,
         ]);

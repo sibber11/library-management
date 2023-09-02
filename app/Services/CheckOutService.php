@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\BookNotAvailableException;
 use App\Models\CheckOut;
 use App\Models\Book;
 use App\Models\Member;
@@ -18,18 +19,26 @@ class CheckOutService
     /**
      * @param array<string, mixed> $data
      */
-    public function checkOut(Member $member, Book $book, Carbon $dueDate = null): void
+    public function checkOut(Member $member, Book $book, Carbon $dueDate = null)
     {
         if ($dueDate == null) {
-            dump('here');
             $dueDate = now()->addMonth();
         }
-        $checkout = new CheckOut([
-            'book_id' => $book->id,
-            'member_id' => $member->id,
-            'check_out_date' => now(),
-            'due_date' => $dueDate,
-        ]);
-        $checkout->save();
+        try{
+            $checkout = new CheckOut([
+                'book_id' => $book->id,
+                'member_id' => $member->id,
+                'check_out_date' => now(),
+                'due_date' => $dueDate,
+            ]);
+            $checkout->save();
+        } catch (BookNotAvailableException $e) {
+            return redirect()->back()->withErrors(['message' => $e->getMessage()]);
+        }
+    }
+
+    public function checkIn(CheckOut $checkout)
+    {
+        $checkout->checkIn();
     }
 }

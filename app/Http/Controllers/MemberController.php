@@ -18,6 +18,23 @@ class MemberController extends Controller
      */
     public function index()
     {
+        if (request()->acceptsJson() && request()->wantsJson() && request()->ajax()) {
+            $data = request()->validate([
+                'search' => 'nullable|string|max:64',
+            ]);
+            
+            return Member::whereHas('user', function ($query) use ($data) {
+                    $query->where('name', 'like', "%{$data['search']}%");
+                })->paginate()
+                ->withQueryString()
+                ->through(function ($member) {
+                    return [
+                        'id' => $member->id,
+                        'name' => $member->user->name,
+                    ];
+                });
+        }
+
         return Inertia::render('Admin/Member/Index', [
             'members' => Member::paginate(),
         ]);

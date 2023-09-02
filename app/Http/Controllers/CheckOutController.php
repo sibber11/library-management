@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\CheckOut;
 use App\Http\Requests\StoreCheckOutRequest;
 use App\Http\Requests\UpdateCheckOutRequest;
+use App\Models\Member;
 use App\Services\CheckOutService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CheckOutController extends Controller
@@ -13,10 +15,40 @@ class CheckOutController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $checkOut = CheckOut::with(['member.user', 'book'])
+            ->when($request->has('filter'), function ($query) use ($request) {
+                switch ($request->filter) {
+                    case 'checked_in':
+                        $query->checkedIn();
+                        break;
+                    case 'checked_out':
+                        $query->checkedOut();
+                        break;
+                }
+            })
+            /**
+             * Lesson: when using whereHas with orWhereHas, you need to wrap the
+             * whereHas in a closure to avoid the query builder from adding
+             * an additional where clause.
+             */
+            ->when($request->search, function ($query, $search) {
+                $query->where(function($query) use($search){
+                    $query->whereHas('member.user', function($query) use($search){
+                        $query->where('name', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('book', function($query) use($search){
+                        $query->where('title', 'LIKE', "%{$search}%");
+                    });
+                });
+            })
+            ->paginate()
+            ->withQueryString();
+    
         return Inertia::render('Admin/CheckOut/Index', [
-            'checkOuts' => CheckOut::paginate(),
+            'checkOuts' => $checkOut,
         ]);
     }
 
@@ -25,9 +57,15 @@ class CheckOutController extends Controller
      */
     public function create()
     {
+        $members = Member::with('user')->limit(10)->get()->map(function ($member) {
+            return [
+                'id' => $member->id,
+                'name' => $member->user->name,
+            ];
+        });
         return Inertia::render('Admin/CheckOut/Fields', [
-            'books' => \App\Models\Book::all(),
-            'members' => \App\Models\Member::all(),
+            'books' => \App\Models\Book::available()->get(),
+            'members' => $members,
         ]);
     }
 
@@ -38,7 +76,7 @@ class CheckOutController extends Controller
     {
         $member = \App\Models\Member::find($request->member_id);
         $book = \App\Models\Book::find($request->book_id);
-        $service->checkOut($member,$book,$request->validated('due_date'));
+        $service->checkOut($member, $book, $request->date('due_date'));
         return redirect()->route('check-outs.index');
     }
 

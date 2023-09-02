@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\BookNotAvailableException;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,10 +21,28 @@ class CheckOut extends Model
         'is_checked_in',
     ];
 
+    protected $casts = [
+        'due_date' => 'datetime:Y-m-d'
+    ];
+
+    // boot method
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($checkout) {
+            if (!$checkout->book->isAvailable()) {
+                throw new BookNotAvailableException();
+            }
+            $checkout->book->decrement('available');
+        });
+    }
+
     public function checkIn(): void
     {
         $this->check_in_date = now();
         $this->is_checked_in = true;
+        $this->book->increment('available');
         $this->save();
     }
 

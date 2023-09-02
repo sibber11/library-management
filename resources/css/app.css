@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+button{
+    @apply px-3 py-1.5 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest
+}
+
+table{
+    @apply w-full rounded-lg overflow-hidden shadow
+}
+
+tbody{
+    @apply divide-y divide-gray-200
+}
+
+th{
+    @apply px-4 py-4 text-sm text-gray-500 uppercase tracking-wider bg-gray-200 text-left
+}
+
+td{
+    @apply px-4 py-4 whitespace-nowrap text-xs
+}
+
+tr{
+    @apply bg-white even:bg-gray-100 hover:bg-gray-200
+}
