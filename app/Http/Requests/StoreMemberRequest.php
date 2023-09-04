@@ -23,6 +23,7 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             'user_id' => ['required', 'exists:users,id'],
+            'membership_duration' => ['required', 'numeric', 'min:1', 'max:12']
         ];
     }
 }

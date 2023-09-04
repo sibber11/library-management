@@ -18,7 +18,7 @@ class CheckOutController extends Controller
     public function index(Request $request)
     {
 
-        $checkOut = CheckOut::with(['member.user', 'book'])
+        $checkouts = CheckOut::with(['member.user', 'book'])
             ->when($request->has('filter'), function ($query) use ($request) {
                 switch ($request->filter) {
                     case 'checked_in':
@@ -48,7 +48,7 @@ class CheckOutController extends Controller
             ->withQueryString();
     
         return Inertia::render('Admin/CheckOut/Index', [
-            'checkOuts' => $checkOut,
+            'checkouts' => $checkouts,
         ]);
     }
 
@@ -57,7 +57,7 @@ class CheckOutController extends Controller
      */
     public function create()
     {
-        $members = Member::with('user')->limit(10)->get()->map(function ($member) {
+        $members = Member::active()->with('user')->limit(10)->get()->map(function ($member) {
             return [
                 'id' => $member->id,
                 'name' => $member->user->name,

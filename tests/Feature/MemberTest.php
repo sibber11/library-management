@@ -69,11 +69,13 @@ class MemberTest extends TestCase
         $user = User::factory()->create();
         $response = $this->post(route('members.store'), [
             'user_id' => $user->id,
+            'membership_duration' => 1,
         ]);
         $response->assertStatus(302);
         $response->assertRedirect(route('members.index'));
         $this->assertDatabaseHas('members', [
             'user_id' => $user->id,
+            'membership_due_date' => now()->addMonth()->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -106,14 +108,16 @@ class MemberTest extends TestCase
     public function test_update()
     {
         $member = Member::factory()->create();
-        $user = User::factory()->create();
+        $user = $member->user;
         $response = $this->put(route('members.update', $member->id), [
-            'user_id' => $user->id,
+            'user_id' => $member->id,
+            'membership_duration' => 1,
         ]);
         $response->assertStatus(302);
         $response->assertRedirect(route('members.index'));
         $this->assertDatabaseHas('members', [
             'user_id' => $user->id,
+            'membership_due_date' => now()->addMonth()->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -134,9 +138,9 @@ class MemberTest extends TestCase
         $member = \App\Models\Member::factory()->create([
             'membership_due_date' => now()->subMonths(1),
         ]);
-        $this->assertEquals('Expired',$member->membership_status);
+        $this->assertFalse($member->membership_status);
         $member->extendMembership(2);
-        $this->assertEquals('Active',$member->membership_status);
-        $this->assertEquals(now()->addMonth()->format('d-M-Y'), $member->membership_due_date->format('d-M-Y'));
+        $this->assertTrue($member->membership_status);
+        $this->assertEquals(now()->addMonths(2)->format('d-m-Y'), $member->membership_due_date->format('d-m-Y'));
     }
 }

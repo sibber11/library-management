@@ -1,13 +1,13 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import Pagination from '../Components/Pagination.vue';
+import qs from 'qs';
 import { ref, onMounted } from 'vue';
 import debounce from 'lodash.debounce';
-import qs from 'qs';
+import Pagination from '../Components/Pagination.vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
-    checkOuts: {
+    checkouts: {
         type: Object,
         required: true
     }
@@ -24,17 +24,13 @@ function checkin(checkout) {
 const status = ref('');
 const searchValue = ref('');
 
-function parseQuery() {
+onMounted(() => {
     const query = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     status.value = query.filter;
     searchValue.value = query.search;
-}
-
-onMounted(() => {
-    parseQuery();
 });
 
-const search = debounce(function (event) {
+const search = debounce(() => {
     if (status.value === '' && searchValue.value === '') {
         router.get(route('check-outs.index'), {}, {
             preserveState: true,
@@ -42,14 +38,10 @@ const search = debounce(function (event) {
         });
         return;
     }
-    const form = useForm({
+    router.get(route('check-outs.index'), {
         ...(searchValue.value && { 'search': searchValue.value }),
         ...(status.value && { 'filter': status.value }),
-    });
-    form.get(route('check-outs.index'), {
-        preserveState: true,
-        replace: true
-    });
+    }, { preserveState: true, replace: true });
 }, 500);
 
 function reset() {
@@ -104,7 +96,7 @@ function reset() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="checkout in checkOuts.data" :key="checkout.id">
+                    <tr v-for="checkout in checkouts.data" :key="checkout.id">
                         <td>{{ checkout.id }}</td>
                         <td>{{ checkout.book.title }}</td>
                         <td>{{ checkout.member.user.name }}</td>
@@ -132,7 +124,7 @@ function reset() {
                     </tr>
                 </tbody>
             </table>
-            <Pagination :links="checkOuts.links" />
+            <Pagination :links="checkouts.links" />
         </section>
     </AuthenticatedLayout>
 </template>

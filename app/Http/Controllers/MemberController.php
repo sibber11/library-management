@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 
@@ -16,16 +17,16 @@ class MemberController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (request()->acceptsJson() && request()->wantsJson() && request()->ajax()) {
             $data = request()->validate([
                 'search' => 'nullable|string|max:64',
             ]);
-            
+
             return Member::whereHas('user', function ($query) use ($data) {
-                    $query->where('name', 'like', "%{$data['search']}%");
-                })->paginate()
+                $query->where('name', 'like', "%{$data['search']}%");
+            })->paginate()
                 ->withQueryString()
                 ->through(function ($member) {
                     return [
@@ -35,8 +36,28 @@ class MemberController extends Controller
                 });
         }
 
+        $members = Member::with(['user'])
+            ->when($request->has('filter'), function ($query) use ($request) {
+                switch ($request->filter) {
+                    case 'active':
+                        $query->active();
+                        break;
+                    case 'expired':
+                        $query->expired();
+                        break;
+                }
+            })
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('user', function ($query) use ($search) {
+                        $query->where('name', 'LIKE', "%{$search}%");
+                    });
+                });
+            })
+            ->paginate()
+            ->withQueryString();
         return Inertia::render('Admin/Member/Index', [
-            'members' => Member::paginate(),
+            'members' => $members,
         ]);
     }
 
@@ -45,8 +66,8 @@ class MemberController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Member/Fields',[
-            'users' => \App\Models\User::all(),
+        return Inertia::render('Admin/Member/Fields', [
+            'users' => \App\Models\User::whereDoesntHave('member')->get(),
         ]);
     }
 
@@ -57,6 +78,7 @@ class MemberController extends Controller
     {
         $member = new Member();
         $member->user_id = $request->user_id;
+        $member->membership_due_date = now()->addMonths($request->validated('membership_duration'));
         $member->save();
 
         return redirect()->route('members.index');
@@ -77,7 +99,7 @@ class MemberController extends Controller
     {
         return Inertia::render('Admin/Member/Fields', [
             'member' => $member,
-            'users' => \App\Models\User::all(),
+            'users' => [$member->user],
         ]);
     }
 
@@ -86,8 +108,7 @@ class MemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, Member $member)
     {
-        $member->user_id = $request->user_id;
-        $member->save();
+        $member->extendMembership($request->integer('membership_duration'));
         return redirect()->route('members.index');
     }
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('members', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\User::class)->constrained()->cascadeOnDelete();
+            $table->smallInteger('type')->default(1);
             $table->date('membership_due_date')->nullable();
             $table->timestamps();
         });

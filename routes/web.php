@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function (){
     Route::resource('books', BookController::class);
     Route::resource('members', MemberController::class);
-    Route::resource('check-outs', CheckOutController::class);
+    Route::resource('check-outs', CheckOutController::class)->except(['show']);
     Route::resource('reservations', ReservationController::class)->except(['show', 'edit']);
 });
 

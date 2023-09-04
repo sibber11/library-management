@@ -67,7 +67,7 @@ function reset() {
                         <th>Name</th>
                         <th>Author</th>
                         <th>Publish</th>
-                        <th>Unit</th>
+                        <th>Status</th>
                         <th class="text-right">Action</th>
                     </tr>
                 </thead>
@@ -77,11 +77,15 @@ function reset() {
                             <Link :href="route('books.show', book.id)" class="font-semibold hover:text-blue-500">
                             {{ book.title }}
                             </Link>
-                            <Badge v-if="book.is_new">New</Badge>
+                            <Badge v-if="book.is_new" class="bg-emerald-100 text-emerald-800">New</Badge>
                         </td>
                         <td class="min-w-max">{{ book.author }}</td>
                         <td>{{ book.publish_year }}</td>
-                        <td>{{ book.available }}</td>
+                        <td>
+                            <Badge :class="{'bg-green-100 text-green-800':book.available,'bg-red-100 text-red-800':!book.available}">
+                                {{ book.available? 'Available' : 'out of stock' }}
+                            </Badge>
+                        </td>
                         <td>
                             <div class="flex flex-row gap-2 justify-end">
                                 <Link :href="route('books.edit', book.id)" as="button"

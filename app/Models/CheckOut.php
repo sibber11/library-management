@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Exceptions\BookNotAvailableException;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -33,6 +34,9 @@ class CheckOut extends Model
         static::creating(function ($checkout) {
             if (!$checkout->book->isAvailable()) {
                 throw new BookNotAvailableException();
+            }
+            if(!$checkout->member->canCheckout()){
+                throw new Exception('Max checkout reached!');
             }
             $checkout->book->decrement('available');
         });
@@ -81,6 +85,4 @@ class CheckOut extends Model
     {
         return $query->where('due_date', now());
     }
-
-
 }

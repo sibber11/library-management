@@ -43,7 +43,7 @@ class CheckOutTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn ($assert) => $assert
             ->component('Admin/CheckOut/Index')
-            ->has('checkOuts')
+            ->has('checkouts')
         );
     }
 

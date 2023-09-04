@@ -54,4 +54,8 @@ class User extends Authenticatable
             get: fn(mixed $value, array $attributes) => $attributes['role'] === 'admin',
         );
     }
+
+    public function member(){
+        return $this->hasOne(Member::class);
+    }
 }
