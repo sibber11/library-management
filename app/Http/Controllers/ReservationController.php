@@ -31,16 +31,26 @@ class ReservationController extends Controller
      */
     public function create(Request $request)
     {
-        $members = Member::active()->with(['user','checkouts'])->limit(10)->get()->map(function ($member) {
-            return [
-                'id' => $member->id,
-                'name' => $member->user->name,
-                'email' => $member->user->email,
-                'checkouts' => $member->checkouts
-            ];
-        });
+        $members = Member::active()
+            ->with([
+                'user',
+                'checkouts' => fn ($q) => $q->checkedout(),
+                'reservations' => fn ($q) => $q->whereIn('status', ['pending', 'reserved'])
+            ])
+            ->limit(10)
+            ->get()
+            ->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->user->name,
+                    'email' => $member->user->email,
+                    'checkouts' => $member->checkouts->pluck('book_id'),
+                    'reservations' => $member->reservations->pluck('book_id')
+                ];
+            });
         $books = Book::unAvailable()->get();
-        return Inertia::render('Admin/CheckOut/Fields', compact('members','books'));
+        // throw new Exception('dd');
+        return Inertia::render('Admin/CheckOut/Fields', compact('members', 'books'));
     }
 
     /**
@@ -55,12 +65,14 @@ class ReservationController extends Controller
             throw new \Exception('The book is already checked out by current member.');
         }
 
-        $reservation = Reservation::where('status', '<>', 'completed')->first();
+        $reservation = Reservation::where('member_id', $member->id)
+            ->where('book_id', $book->id)
+            ->where('status', '<>', 'completed')->first();
 
         if (empty($reservation)) {
             Reservation::create($request->validated());
         }
-        
+
         return redirect()->route('reservations.index');
     }
 
@@ -71,7 +83,7 @@ class ReservationController extends Controller
     {
         if ($request->status == 'completed') {
             // $reservation->load(['member','book']);
-            return to_route('check-outs.create',[
+            return to_route('check-outs.create', [
                 'member' => $reservation->member_id,
                 'book' => $reservation->book_id
             ]);

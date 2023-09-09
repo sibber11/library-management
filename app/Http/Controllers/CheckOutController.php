@@ -37,18 +37,18 @@ class CheckOutController extends Controller
              * an additional where clause.
              */
             ->when($request->search, function ($query, $search) {
-                $query->where(function($query) use($search){
-                    $query->whereHas('member.user', function($query) use($search){
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('member.user', function ($query) use ($search) {
                         $query->where('name', 'LIKE', "%{$search}%");
                     })
-                    ->orWhereHas('book', function($query) use($search){
-                        $query->where('title', 'LIKE', "%{$search}%");
-                    });
+                        ->orWhereHas('book', function ($query) use ($search) {
+                            $query->where('title', 'LIKE', "%{$search}%");
+                        });
                 });
             })
             ->paginate()
             ->withQueryString();
-    
+
         return Inertia::render('Admin/CheckOut/Index', [
             'checkouts' => $checkouts,
         ]);
@@ -59,21 +59,31 @@ class CheckOutController extends Controller
      */
     public function create(Request $request)
     {
-        $members = Member::active()->canCheckout()->with(['user'])->limit(10)->get()->map(function ($member) {
-            return [
-                'id' => $member->id,
-                'name' => $member->user->name,
-                'email' => $member->user->email,
-                'checkouts' => $member->checkouts
-            ];
-        });
+        $members = Member::active()
+            ->canCheckout()
+            ->with([
+                'user',
+                'checkouts' => fn ($q) => $q->checkedout(),
+                'reservations' => fn ($q) => $q->whereIn('status', ['pending', 'reserved'])
+            ])
+            ->limit(10)
+            ->get()
+            ->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->user->name,
+                    'email' => $member->user->email,
+                    'checkouts' => $member->checkouts->pluck('book_id'),
+                    'reservations' => $member->reservations->pluck('book_id'),
+                ];
+            });
 
 
         /**
          * SELECT "members".*, (SELECT count(*) FROM "check_outs" WHERE "members"."id" = "check_outs"."member_id" AND "is_checked_in" = false) AS "checkouts_count" FROM "members" WHERE "membership_due_date" > 2023-09-08T15:52:53.551463Z
          */
         $books = Book::get();
-        return Inertia::render('Admin/CheckOut/Fields', compact('members','books'));
+        return Inertia::render('Admin/CheckOut/Fields', compact('members', 'books'));
     }
 
     /**
@@ -83,7 +93,7 @@ class CheckOutController extends Controller
     {
         $member = \App\Models\Member::find($request->member_id);
         $book = \App\Models\Book::find($request->book_id);
-        
+
         if ($member->alreadyCheckedOut($book)) {
             throw new \Exception('The book is already checked out by current member.');
             // return back()->withErrors(['member_id' => 'The book is already checked out by current member.']);

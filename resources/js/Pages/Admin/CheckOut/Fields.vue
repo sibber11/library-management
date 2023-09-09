@@ -10,10 +10,7 @@ import Book from './Book.vue';
 import Badge from '../Components/Badge.vue';
 
 const props = defineProps({
-    checkout: {
-        type: Object,
-        required: false
-    },
+    checkout: Object,
     books: Object,
     members: Object,
 });
@@ -100,7 +97,8 @@ function save() {
                                         <span>{{ option.title }}</span>
                                         <Badge
                                             :class="{ 'bg-red-100 text-red-800': !option.available, 'bg-green-100 text-green-800': option.available }">
-                                            {{ option.available ? option.available : 'out' }}</Badge>
+                                            {{ form.member?.checkouts.includes(option.id)?'checked out':form.member?.reservations.includes(option.id)?'reserved':option.available ? option.available : 'out' }}
+                                        </Badge>
                                     </div>
                                 </template>
                                 <template #search="{ attributes, events }">
