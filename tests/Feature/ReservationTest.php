@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Book;
+use App\Models\CheckOut;
 use App\Models\Member;
 use App\Models\Reservation;
 use Database\Seeders\ReservationSeeder;
@@ -40,9 +41,10 @@ class ReservationTest extends TestCase
     {
         $response = $this->get(route('reservations.index'));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => $page
-            ->component('Admin/Reservation/Index')
-            ->has('reservations')
+        $response->assertInertia(
+            fn ($page) => $page
+                ->component('Admin/Reservation/Index')
+                ->has('reservations')
         );
     }
 
@@ -63,7 +65,7 @@ class ReservationTest extends TestCase
         $this->assertDatabaseHas('reservations', [
             'member_id' => $member->id,
             'book_id' => $book->id,
-            'status' => 'reserved'
+            'status' => 'pending'
         ]);
     }
 
@@ -75,13 +77,13 @@ class ReservationTest extends TestCase
     {
         $reservation = Reservation::factory()->create();
         $response = $this->put(route('reservations.update', $reservation), [
-            'status' => 'completed',
+            'status' => 'canceled',
         ]);
         $response->assertStatus(302);
         $response->assertRedirect(route('reservations.index'));
         $this->assertDatabaseHas('reservations', [
             'id' => $reservation->id,
-            'status' => 'completed',
+            'status' => 'canceled',
         ]);
     }
 
@@ -96,6 +98,61 @@ class ReservationTest extends TestCase
         $response->assertRedirect(route('reservations.index'));
         $this->assertDatabaseMissing('reservations', [
             'id' => $reservation->id,
+        ]);
+    }
+
+    /**
+     * test the reservation
+     */
+    public function test_reservation_is_reserved_on_checkin()
+    {
+        $checkOut = CheckOut::factory()->create([
+            'is_checked_in' => false
+        ]);
+
+        $reservation = Reservation::factory()->create([
+            'book_id' => $checkOut->book_id,
+            'status' => 'pending'
+        ]);
+
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+            'status' => 'pending'
+        ]);
+
+        $checkOut->checkIn();
+
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+            'status' => 'reserved'
+        ]);
+    }
+
+    /**
+     * test complete reservation on checkout
+     */
+    public function test_reservation_is_completed_on_checkout()
+    {
+        $checkOut = CheckOut::factory()->create([
+            'is_checked_in' => true
+        ]);
+
+        $reservation = Reservation::factory()->create([
+            'book_id' => $checkOut->book_id,
+            'status' => 'reserved'
+        ]);
+
+        $response = $this->post(route('check-outs.store'), [
+            'book_id' => $checkOut->book_id,
+            'member_id' => $reservation->member_id,
+            'due_date' => now()->addMonth()
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservation->id,
+            'status' => 'completed'
         ]);
     }
 }

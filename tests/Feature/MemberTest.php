@@ -44,6 +44,46 @@ class MemberTest extends TestCase
             fn ($assert) => $assert
                 ->component('Admin/Member/Index')
                 ->has('members')
+        );    
+    }
+
+    public function test_index_can_be_filtered(){
+        Member::factory()->active()->count(5)->create();
+        Member::factory()->count(5)->create();
+
+        $response = $this->get(route('members.index', ['filter' => 'active']));
+        $response->assertStatus(200);
+        $response->assertInertia(
+            fn ($assert) => $assert
+                ->component('Admin/Member/Index')
+                ->has('members')
+                ->has('members.data', 5)
+        );
+
+        $response = $this->get(route('members.index', ['filter' => 'expired']));
+        $response->assertStatus(200);
+        $response->assertInertia(
+            fn ($assert) => $assert
+                ->component('Admin/Member/Index')
+                ->has('members')
+                ->has('members.data', 5)
+        ); 
+    }
+
+    public function test_index_can_be_searched(){
+        $user = Member::factory()->create([
+            'user_id' => User::factory()->create([
+                'name' => 'test',
+            ])->id,
+        ]);
+
+        $response = $this->get(route('members.index', ['search' => 'test']));
+        $response->assertStatus(200);
+        $response->assertInertia(
+            fn ($assert) => $assert
+                ->component('Admin/Member/Index')
+                ->has('members')
+                ->has('members.data',1)
         );
     }
 

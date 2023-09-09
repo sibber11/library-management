@@ -3,12 +3,12 @@
 librarian would be able to manage books, visitors would book various books, also there would be stock management, notifications to return books, etc.
 
 ## Features
-- [ ] Book Management
+- [x] Book Management
     - [x] Add
     - [x] Edit
     - [x] Delete
     - [x] Search
-    - [ ] Reservation
+    - [x] Reservation
     - [x] History
     - [x] Return
     - [x] Renew
@@ -27,15 +27,15 @@ A library management web application using Laravel can have various features dep
 
 - [ ] User Authentication: Implement user registration and login functionality for both librarians and library members.
 
-- [ ] Book Catalog: Allow librarians to add, edit, and delete books from the library catalog. Include details like title, author, ISBN, genre, and availability status.
+- [x] Book Catalog: Allow librarians to add, edit, and delete books from the library catalog. Include details like title, author, ISBN, genre, and availability status.
 
-- [ ] Member Management: Enable librarians to manage library members, including registration, updating member details, and membership status.
+- [x] Member Management: Enable librarians to manage library members, including registration, updating member details, and membership status.
 
 - [ ] Check-in and Check-out: Implement a system for members to check out books and return them. Keep track of due dates and send reminders for overdue books.
 
-- [ ] Search and Browse: Provide a search and browse feature for users to find books easily. You can implement filters by genre, author, availability, etc.
+- [x] Search and Browse: Provide a search and browse feature for users to find books easily. You can implement filters by genre, author, availability, etc.
 
-- [ ] Reservations: Allow users to reserve books that are currently checked out. Notify them when the book becomes available.
+- [x] Reservations: Allow users to reserve books that are currently checked out. Notify them when the book becomes available.
 
 - [ ] Fines and Fees: Calculate and manage fines for late returns and fees for lost or damaged books.
 
@@ -43,7 +43,7 @@ A library management web application using Laravel can have various features dep
 
 - [ ] Notifications: Implement email or SMS notifications for due dates, reservations, and important library updates.
 
-- [ ] Admin Panel: Create a secure admin panel for librarians to manage all aspects of the library system, including user accounts and system settings.
+- [x] Admin Panel: Create a secure admin panel for librarians to manage all aspects of the library system, including user accounts and system settings.
 
 - [ ] Reviews and Ratings: Let users rate and review books, providing valuable feedback for other members.
 

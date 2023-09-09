@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\BookCheckedOut;
 use App\Exceptions\BookNotAvailableException;
 use App\Models\CheckOut;
 use App\Models\Book;
@@ -32,6 +33,7 @@ class CheckOutService
                 'due_date' => $dueDate,
             ]);
             $checkout->save();
+            BookCheckedOut::dispatch($checkout->book, $checkout->member);
         } catch (BookNotAvailableException $e) {
             return redirect()->back()->withErrors(['message' => $e->getMessage()]);
         }

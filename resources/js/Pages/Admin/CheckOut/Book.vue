@@ -1,7 +1,7 @@
 <script setup>
 
 const props = defineProps({
-    book: Object
+    book: [Object, String]
 })
 
 </script>
@@ -20,7 +20,7 @@ const props = defineProps({
             <span>{{ book.publish_year }}</span>
         </div>
     </article>
-    <article class="shadow-md rounded overflow-hidden p-4 bg-rose-400 flex gap-1 flex-col" v-else>
+    <article class="shadow-md rounded overflow-hidden p-3 bg-rose-400 flex flex-col justify-between h-24" v-else>
         <div class="flex justify-start gap-2">
             <div class="bg-rose-200 w-1/3 h-5 rounded inline-block"></div>
             <div class="bg-rose-200 w-10 h-5 rounded inline-block"></div>

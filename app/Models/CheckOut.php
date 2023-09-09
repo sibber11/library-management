@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\BookCheckedIn;
 use App\Exceptions\BookNotAvailableException;
 use Carbon\Carbon;
 use Exception;
@@ -38,16 +39,22 @@ class CheckOut extends Model
             if(!$checkout->member->canCheckout()){
                 throw new Exception('Max checkout reached!');
             }
-            $checkout->book->decrement('available');
+            if (!$checkout->is_checked_in) {
+                $checkout->book->decrement('available');
+            }
         });
     }
 
     public function checkIn(): void
     {
+        if ($this->is_checked_in) {
+            return;
+        }
         $this->check_in_date = now();
         $this->is_checked_in = true;
         $this->book->increment('available');
         $this->save();
+        BookCheckedIn::dispatch($this->book);
     }
 
     public function extendDueDate(Carbon $date)

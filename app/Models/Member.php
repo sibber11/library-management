@@ -86,14 +86,27 @@ class Member extends Model
      * scope to return only members who can checkout
      * warning: this scope will not work with count
      */
-    public function scopeCan($query)
+    public function scopeCanCheckout($query)
+    {
+        $query->withCount(['checkouts' => function ($query) {
+            $query->where('is_checked_in', false);
+        }])
+            ->whereRaw('"checkouts_count" < "members"."type"');
+    }
+
+    public function scopeCantCheckout($query)
     {
         $query->withCount('checkouts')
-            ->whereRaw('"checkouts_count" < "members"."type"');
+            ->whereRaw('checkouts_count = members.type');
     }
 
     public function canCheckout()
     {
         return $this->checkouts()->checkedout()->count() < $this->type;
+    }
+
+    public function alreadyCheckedOut(Book $book)
+    {
+        return $this->checkouts()->checkedout()->whereBookId($book->id)->count() > 0;
     }
 }

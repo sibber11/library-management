@@ -56,11 +56,22 @@ function reset() {
         </template>
 
         <section class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="flex gap-4 flex-nowrap my-4">
+            <div class="flex gap-4 flex-nowrap my-4 justify-between">
+                <div class="flex gap-4">
                     <input type="text" placeholder="Search by book name..." class="rounded border-transparent bg-gray-200"
                         v-model="searchValue" @input="search" autofocus>
                     <button class="bg-gray-200 text-gray-800 hover:bg-gray-300" type="button" @click="reset">reset</button>
                 </div>
+                <!-- todo: filter by year -->
+                <!-- <div>
+                    <label>Filter: </label>
+                    <select class="uppercase rounded border-transparent bg-gray-200" v-model="status" @input="search">
+                        <option value="">select..</option>
+                        <option value="active" class="uppercase">Active</option>
+                        <option value="expired" class="uppercase">Expired</option>
+                    </select>
+                </div> -->
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -82,8 +93,9 @@ function reset() {
                         <td class="min-w-max">{{ book.author }}</td>
                         <td>{{ book.publish_year }}</td>
                         <td>
-                            <Badge :class="{'bg-green-100 text-green-800':book.available,'bg-red-100 text-red-800':!book.available}">
-                                {{ book.available? 'Available' : 'out of stock' }}
+                            <Badge
+                                :class="{ 'bg-green-100 text-green-800': book.available, 'bg-red-100 text-red-800': !book.available }">
+                                {{ book.available ? 'Available' : 'out of stock' }}
                             </Badge>
                         </td>
                         <td>

@@ -19,7 +19,7 @@ class MemberFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'membership_due_date' => now(),
+            'membership_due_date' => now()->subDay(),
             'type' => $this->faker->numberBetween(1,3),
         ];
     }

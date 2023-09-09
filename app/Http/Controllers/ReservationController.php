@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Book;
 use Inertia\Inertia;
 use App\Models\Member;
 use App\Models\Reservation;
+use App\Events\BookReserved;
+use Illuminate\Http\Request;
+use App\Services\CheckOutService;
 use App\Http\Requests\StoreReservationRequest;
 use App\Http\Requests\UpdateReservationRequest;
 
@@ -16,9 +20,27 @@ class ReservationController extends Controller
      */
     public function index()
     {
+        $reservations = Reservation::with(['book', 'member.user'])->paginate();
         return Inertia::render('Admin/Reservation/Index', [
-            'reservations' => Reservation::paginate()
+            'reservations' => $reservations
         ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(Request $request)
+    {
+        $members = Member::active()->with(['user','checkouts'])->limit(10)->get()->map(function ($member) {
+            return [
+                'id' => $member->id,
+                'name' => $member->user->name,
+                'email' => $member->user->email,
+                'checkouts' => $member->checkouts
+            ];
+        });
+        $books = Book::unAvailable()->get();
+        return Inertia::render('Admin/CheckOut/Fields', compact('members','books'));
     }
 
     /**
@@ -26,7 +48,19 @@ class ReservationController extends Controller
      */
     public function store(StoreReservationRequest $request)
     {
-        Reservation::create($request->validated());
+        $member = Member::find($request->member_id);
+        $book = Book::find($request->book_id);
+
+        if ($member->alreadyCheckedOut($book)) {
+            throw new \Exception('The book is already checked out by current member.');
+        }
+
+        $reservation = Reservation::where('status', '<>', 'completed')->first();
+
+        if (empty($reservation)) {
+            Reservation::create($request->validated());
+        }
+        
         return redirect()->route('reservations.index');
     }
 
@@ -35,8 +69,22 @@ class ReservationController extends Controller
      */
     public function update(UpdateReservationRequest $request, Reservation $reservation)
     {
-        $reservation->fill($request->validated());
-        $reservation->save();
+        if ($request->status == 'completed') {
+            // $reservation->load(['member','book']);
+            return to_route('check-outs.create',[
+                'member' => $reservation->member_id,
+                'book' => $reservation->book_id
+            ]);
+        }
+
+        if ($reservation->status == 'completed') {
+            return redirect()->route('reservations.index');
+        }
+
+        if ($reservation->status == 'canceled') {
+            $reservation->cancel();
+        }
+
         return redirect()->route('reservations.index');
     }
 

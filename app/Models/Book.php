@@ -44,14 +44,14 @@ class Book extends Model
     protected function isNew(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => $attributes['created_at'] > now()->subMonth(6),
+            get: fn (mixed $value, array $attributes) => $attributes['created_at'] > now()->subMonth(6),
         );
     }
 
     protected function publishYear(): Attribute
     {
         return Attribute::make(
-            get: fn(mixed $value, array $attributes) => Carbon::make($attributes['published_at'])->format('Y'),
+            get: fn (mixed $value, array $attributes) => Carbon::make($attributes['published_at'])->format('Y'),
         );
     }
 
@@ -60,9 +60,28 @@ class Book extends Model
         return $this->available > 0;
     }
 
+    public function isReserved(Member $member): bool
+    {
+        $reservations = Reservation::reserved()->whereBookId($this->id)->get();
+        $reservedByMember =  $reservations->contains(function ($item) use ($member) {
+            return $item->member_id == $member->id;
+        });
+        if ($reservations->count() > 0 && $reservedByMember) {
+            return false;
+        }
+        if ($reservations->count() == 0) {
+            return false;
+        }
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('available', '>', 0);
+    }
+
+    public function scopeUnAvailable($query)
+    {
+        return $query->where('available', '=', 0);
     }
 
     public function checkouts()
@@ -82,4 +101,9 @@ class Book extends Model
     // {
     //     return $this->hasMany(Fine::class);
     // }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }

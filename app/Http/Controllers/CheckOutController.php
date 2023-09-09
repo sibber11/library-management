@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\CheckOut;
 use App\Http\Requests\StoreCheckOutRequest;
 use App\Http\Requests\UpdateCheckOutRequest;
+use App\Models\Book;
 use App\Models\Member;
 use App\Services\CheckOutService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Exception;
 
 class CheckOutController extends Controller
 {
@@ -55,18 +57,23 @@ class CheckOutController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $members = Member::active()->with('user')->limit(10)->get()->map(function ($member) {
+        $members = Member::active()->canCheckout()->with(['user'])->limit(10)->get()->map(function ($member) {
             return [
                 'id' => $member->id,
                 'name' => $member->user->name,
+                'email' => $member->user->email,
+                'checkouts' => $member->checkouts
             ];
         });
-        return Inertia::render('Admin/CheckOut/Fields', [
-            'books' => \App\Models\Book::available()->get(),
-            'members' => $members,
-        ]);
+
+
+        /**
+         * SELECT "members".*, (SELECT count(*) FROM "check_outs" WHERE "members"."id" = "check_outs"."member_id" AND "is_checked_in" = false) AS "checkouts_count" FROM "members" WHERE "membership_due_date" > 2023-09-08T15:52:53.551463Z
+         */
+        $books = Book::get();
+        return Inertia::render('Admin/CheckOut/Fields', compact('members','books'));
     }
 
     /**
@@ -76,16 +83,18 @@ class CheckOutController extends Controller
     {
         $member = \App\Models\Member::find($request->member_id);
         $book = \App\Models\Book::find($request->book_id);
+        
+        if ($member->alreadyCheckedOut($book)) {
+            throw new \Exception('The book is already checked out by current member.');
+            // return back()->withErrors(['member_id' => 'The book is already checked out by current member.']);
+        }
+
+        if ($book->isReserved($member)) {
+            throw new \Exception('The book is reserved by someone else.');
+        }
+
         $service->checkOut($member, $book, $request->date('due_date'));
         return redirect()->route('check-outs.index');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(CheckOut $checkOut)
-    {
-        //
     }
 
     /**
@@ -103,7 +112,6 @@ class CheckOutController extends Controller
      */
     public function update(UpdateCheckOutRequest $request, CheckOut $checkOut)
     {
-        // dd($request->validated());
         if ($request->has('is_checked_in')) {
             $checkOut->checkIn();
         } else {
@@ -117,6 +125,7 @@ class CheckOutController extends Controller
      */
     public function destroy(CheckOut $checkOut)
     {
+        $checkOut->checkIn();
         $checkOut->delete();
         return redirect()->route('check-outs.index');
     }

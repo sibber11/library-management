@@ -19,7 +19,7 @@ class ReservationFactory extends Factory
         return [
             'member_id' => \App\Models\Member::factory(),
             'book_id' => \App\Models\Book::factory(),
-            'status' => $this->faker->randomElement(['reserved', 'canceled', 'completed']),
+            'status' => $this->faker->randomElement(['reserved', 'canceled', 'completed', 'pending']),
         ];
     }
 }
