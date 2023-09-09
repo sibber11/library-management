@@ -4,6 +4,10 @@ const props = defineProps({
     links: {
         type: Object,
         required: true
+    },
+    only:{
+        type: Array,
+        required: false
     }
 });
 </script>
@@ -13,6 +17,8 @@ const props = defineProps({
         <div class="bg-white inline-flex flex-row rounded-lg divide-x shadow divide-gray-300 border-gray-300 my-2">
             <Link v-for="(link, index) in links" v-html="link.label"
                 class="border-collapse px-2 py-1 hover:bg-gray-400 hover:text-white font-semibold" :href="link.url ?? ''"
+                :only="only"
+                preserve-scroll
                 :key="index"
                 :class="{ 'bg-gray-400 text-white': link.active, 'text-gray-400 pointer-events-none': !link.url }">
             </Link>

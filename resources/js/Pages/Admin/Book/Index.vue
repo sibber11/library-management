@@ -85,7 +85,7 @@ function reset() {
                 <tbody class="text-xs">
                     <tr v-for="book in books.data" :key="book.id">
                         <td>
-                            <Link :href="route('books.show', book.id)" class="font-semibold hover:text-blue-500">
+                            <Link :href="route('books.show', book.id)" class="text-sm font-semibold text-blue-700">
                             {{ book.title }}
                             </Link>
                             <Badge v-if="book.is_new" class="bg-emerald-100 text-emerald-800">New</Badge>
@@ -113,7 +113,7 @@ function reset() {
                     </tr>
                 </tbody>
             </table>
-            <Pagination :links="books.links" />
+            <Pagination :links="books.links" :only="['books']"/>
         </section>
     </AuthenticatedLayout>
 </template>

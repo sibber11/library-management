@@ -128,7 +128,7 @@ function reset() {
                     </tr>
                 </tbody>
             </table>
-            <Pagination :links="reservations.links" />
+            <Pagination :links="reservations.links" :only="['reservations']" />
         </section>
     </AuthenticatedLayout>
 </template>

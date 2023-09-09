@@ -17,7 +17,10 @@ function checkin(checkout) {
     const form = useForm({
         'is_checked_in': true
     });
-    form.patch(route('check-outs.update', checkout.id));
+    form.patch(route('check-outs.update', checkout.id),{
+        preserveScroll: true,
+        only: ['checkouts']
+    });
 }
 
 
@@ -124,7 +127,7 @@ function reset() {
                     </tr>
                 </tbody>
             </table>
-            <Pagination :links="checkouts.links" />
+            <Pagination :links="checkouts.links" :only="['checkouts']"/>
         </section>
     </AuthenticatedLayout>
 </template>
