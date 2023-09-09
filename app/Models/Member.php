@@ -36,6 +36,11 @@ class Member extends Model
         return $this->hasMany(CheckOut::class);
     }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
     /**
      * return the join date in the format d-M-Y
      */
