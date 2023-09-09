@@ -89,7 +89,13 @@ class MemberController extends Controller
      */
     public function show(Member $member)
     {
-        //
+        $checkouts = $member->checkouts()->with('book')->paginate(5)->withQueryString();
+        $reservations = $member->reservations()->with('book')->paginate(5)->withQueryString();
+        return Inertia::render('Admin/Member/Show',[
+            'member' => $member->load('user'),
+            'checkouts' => $checkouts,
+            'reservations' => $reservations
+        ]);
     }
 
     /**

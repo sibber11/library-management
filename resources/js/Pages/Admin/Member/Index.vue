@@ -91,7 +91,9 @@ function reset() {
                     <tr v-for="member in members.data" :key="member.id">
                         <td>{{ member.id }}</td>
                         <td>
-                            <span>{{ member.user.name }}</span>
+                            <Link :href="route('members.show', member.id)" class="text-sm font-semibold text-blue-700">
+                            {{ member.user.name }}
+                            </Link>
                         </td>
                         <td>
                             {{ member.membership_due_date }}
@@ -118,7 +120,7 @@ function reset() {
                     </tr>
                 </tbody>
             </table>
-            <Pagination :links="members.links" />
+            <Pagination :links="members.links" :only="['members']"/>
         </section>
     </AuthenticatedLayout>
 </template>
