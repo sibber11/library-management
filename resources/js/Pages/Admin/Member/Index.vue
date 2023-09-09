@@ -82,6 +82,7 @@ function reset() {
                         <th>ID</th>
                         <th>Name</th>
                         <th>Membership</th>
+                        <th>Type</th>
                         <th>Status</th>
                         <th class="text-right">Action</th>
                     </tr>
@@ -95,6 +96,7 @@ function reset() {
                         <td>
                             {{ member.membership_due_date }}
                         </td>
+                        <td>{{ member.type }}</td>
                         <td>
                             <Badge
                                 :class="{ 'text-red-800 bg-red-100': !member.membership_status, 'text-emerald-800 bg-emerald-100': member.membership_status }">
