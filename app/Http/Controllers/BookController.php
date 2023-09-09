@@ -16,10 +16,10 @@ class BookController extends Controller
     public function index(Request $request)
     {
         $books = Book::latest()
-        ->when($request->search, function($query, $search){
-            $query->where('title', 'LIKE', "%{$search}%")
-            ->orWhere('author', 'LIKE', "%{$search}%");
-        })->paginate()->withQueryString();
+            ->when($request->search, function ($query, $search) {
+                $query->where('title', 'LIKE', "%{$search}%")
+                    ->orWhere('author', 'LIKE', "%{$search}%");
+            })->paginate()->withQueryString();
 
         return Inertia::render('Admin/Book/Index', [
             'books' => $books,
@@ -48,9 +48,18 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
+        $checkouts = $book->checkouts()
+            ->latest()
+            ->with('member.user')
+            ->paginate(5)
+            ->withQueryString();
+        $reservations = $book->reservations()
+        ->with('member.user')
+        ->paginate(5)->withQueryString();
         return Inertia::render('Admin/Book/Show', [
             'book' => $book,
-            'checkouts' => $book->checkouts()->latest()->with('member.user')->paginate(5)->withQueryString(),
+            'checkouts' => $checkouts,
+            'reservations' => $reservations
         ]);
     }
 
@@ -60,7 +69,7 @@ class BookController extends Controller
     public function edit(Book $book)
     {
         $book->makeVisible('price');
-        return Inertia::render('Admin/Book/Fields',[
+        return Inertia::render('Admin/Book/Fields', [
             'book' => $book,
         ]);
     }

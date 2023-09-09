@@ -2,6 +2,8 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Pagination from '../Components/Pagination.vue';
+import { statusClass } from '@/helper';
+import Badge from '../Components/Badge.vue';
 
 const props = defineProps({
     book: {
@@ -9,6 +11,10 @@ const props = defineProps({
         required: true
     },
     checkouts: {
+        type: Object,
+        required: false
+    },
+    reservations: {
         type: Object,
         required: false
     }
@@ -45,7 +51,32 @@ const props = defineProps({
                 </div>
             </div>
         </div>
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8" v-if="reservations.data">
+            <h2 class="text-lg font-semibold p-2 my-2 bg-white rounded shadow">Reservations</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Member</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="reservation in reservations.data" :key="reservation.id">
+                        <td>{{ reservation.id }}</td>
+                        <td>{{ reservation.member.user.name }}</td>
+                        <td>
+                            <Badge :class="statusClass(reservation.status)">
+                                {{ reservation.status }}
+                            </Badge>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <Pagination :links="checkouts.links" />
+        </div>
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8" v-if="checkouts.data">
+            <h2 class="text-lg font-semibold p-2 my-2 bg-white rounded shadow">Checkout History</h2>
             <table>
                 <thead>
                     <tr>
@@ -53,6 +84,7 @@ const props = defineProps({
                         <th>Member</th>
                         <th>Status</th>
                         <th>Due Date</th>
+                        <th>Check in Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,6 +98,9 @@ const props = defineProps({
                         </td>
                         <td>
                             {{ checkout.due_date }}
+                        </td>
+                        <td>
+                            {{ checkout.check_in_date }}
                         </td>
                     </tr>
                 </tbody>
