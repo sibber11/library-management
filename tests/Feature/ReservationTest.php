@@ -75,7 +75,9 @@ class ReservationTest extends TestCase
      */
     public function test_update()
     {
-        $reservation = Reservation::factory()->create();
+        $reservation = Reservation::factory()->create([
+            'status' => 'pending'
+        ]);
         $response = $this->put(route('reservations.update', $reservation), [
             'status' => 'canceled',
         ]);

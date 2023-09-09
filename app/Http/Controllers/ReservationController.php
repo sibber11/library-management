@@ -81,7 +81,7 @@ class ReservationController extends Controller
             return redirect()->route('reservations.index');
         }
 
-        if ($reservation->status == 'canceled') {
+        if ($reservation->status == 'pending' || $reservation->status == 'reserved') {
             $reservation->cancel();
         }
 
