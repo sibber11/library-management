@@ -72,6 +72,7 @@ class Book extends Model
         if ($reservations->count() == 0) {
             return false;
         }
+        return true;
     }
 
     public function scopeAvailable($query)
