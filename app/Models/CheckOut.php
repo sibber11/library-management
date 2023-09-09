@@ -23,6 +23,8 @@ class CheckOut extends Model
         'is_checked_in',
     ];
 
+    public $perPage = 8;
+
     protected $casts = [
         'due_date' => 'datetime:Y-m-d'
     ];
@@ -75,12 +77,12 @@ class CheckOut extends Model
 
     public function scopeCheckedIn($query)
     {
-        return $query->where('is_checked_in', true);
+        return $query->where('is_checked_in', 1);
     }
 
     public function scopeCheckedOut($query)
     {
-        return $query->where('is_checked_in', false);
+        return $query->where('is_checked_in', 0);
     }
 
     public function scopeOverdue($query)
