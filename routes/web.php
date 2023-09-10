@@ -7,6 +7,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CheckOutController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReservationController;
 
 /*
@@ -27,11 +28,9 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('home');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -39,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth')->group(function (){
+Route::middleware(['auth','admin'])->group(function (){
     Route::resource('books', BookController::class);
     Route::resource('members', MemberController::class);
     Route::resource('check-outs', CheckOutController::class)->except(['show']);

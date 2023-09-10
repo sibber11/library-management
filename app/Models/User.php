@@ -45,6 +45,10 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $appends = [
+        'is_admin',
+    ];
+
     /**
      * determine if the user is admin
      */
@@ -57,5 +61,13 @@ class User extends Authenticatable
 
     public function member(){
         return $this->hasOne(Member::class);
+    }
+
+    public static function boot(){
+        parent::boot();
+
+        static::created(function($user){
+            $user->member()->create();
+        });
     }
 }
