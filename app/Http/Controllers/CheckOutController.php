@@ -77,13 +77,9 @@ class CheckOutController extends Controller
                     'reservations' => $member->reservations->pluck('book_id'),
                 ];
             });
-
-
-        /**
-         * SELECT "members".*, (SELECT count(*) FROM "check_outs" WHERE "members"."id" = "check_outs"."member_id" AND "is_checked_in" = false) AS "checkouts_count" FROM "members" WHERE "membership_due_date" > 2023-09-08T15:52:53.551463Z
-         */
         $books = Book::get();
-        return Inertia::render('Admin/CheckOut/Fields', compact('members', 'books'));
+        $due_date = now()->addMonth()->format('Y-m-d');
+        return Inertia::render('Admin/CheckOut/Fields', compact('members', 'books', 'due_date'));
     }
 
     /**

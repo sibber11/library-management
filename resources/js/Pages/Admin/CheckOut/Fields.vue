@@ -13,12 +13,13 @@ const props = defineProps({
     checkout: Object,
     books: Object,
     members: Object,
+    due_date: String
 });
 
 const form = useForm({
     book: null,
     member: null,
-    due_date: ''
+    due_date: props.due_date
 });
 
 onMounted(() => {
@@ -34,7 +35,6 @@ onMounted(() => {
         form.book = props.books.find(item => item.id == query.book);
         form.member = props.members.find(item => item.id == query.member);
     }
-    form.due_date = new Date().toISOString().substring(0, 10);
 });
 
 const pageTitle = computed(() => {
@@ -115,7 +115,7 @@ function save() {
                             <Book :book="form.book" />
                         </div>
                     </div>
-                    <div class="flex flex-wrap -mx-3 mb-6">
+                    <div class="flex flex-wrap -mx-3 mb-6" v-if="form.due_date">
                         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                             <label for="published_date"
                                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Due Date</label>
