@@ -1,7 +1,36 @@
 <script setup>
+import Widget from '@/Components/Widget.vue';
+import Widgets from '@/Components/Widgets.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import { mdiBook, mdiBookOpen } from '@mdi/js';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+} from 'chart.js';
+import { Line } from 'vue-chartjs';
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+)
+
+defineProps({
+    lineChart: Object,
+    inventory: Object,
+    members: Object,
+    overdueBooks: Object
+});
 </script>
 
 <template>
@@ -12,10 +41,65 @@ import { Link } from '@inertiajs/vue3';
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">You're logged in!</div>
+        <!-- quick links -->
+
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-12">
+                <div class="p-6 text-gray-900">Hello <span>{{ $page.props.auth.user.name }}</span>. Welcome to
+                    <span>Library Management.</span>
+                </div>
+            </div>
+            <h3 class="py-6 text-gray-900 font-extrabold uppercase">
+                Quick Links
+            </h3>
+            <div class="flex gap-4 flex-wrap">
+                <Link class="bg-orange-800" as="button" :href="route('check-outs.create')">New Checkout</Link>
+                <Link class="bg-orange-800" as="button" :href="route('books.create')">New Book</Link>
+                <Link class="bg-orange-800" as="button" :href="route('members.create')">New Member</Link>
+
+            </div>
+            <Widgets title="Inventory Statistics">
+                <Widget title="Total Books" :value="inventory.totalBooks" :icon="mdiBook" />
+                <Widget title="Available Books" :value="inventory.availableBooks" :icon="mdiBookOpen" />
+                <Widget title="Total Issued Books" :value="inventory.issuedBooks" :icon="mdiBook" />
+                <Widget title="Total Reservations" :value="inventory.reservations" :icon="mdiBookOpen" />
+            </Widgets>
+            <Widgets title="Member Statistics">
+                <Widget title="Total Members" :value="members.totalMembers" :icon="mdiBook" />
+                <Widget title="Active Members" :value="members.activeMembers" :icon="mdiBookOpen" />
+                <Widget title="Expired Members" :value="members.expiredMembers" :icon="mdiBook" />
+            </Widgets>
+            <div class="py-4">
+                <h3 class="py-6 text-gray-900 font-extrabold uppercase">
+                    Usage Reports
+                </h3>
+                <Line :data="lineChart" />
+            </div>
+
+            <div class="overflow-hidden shadow-sm sm:rounded-lg pb-4">
+                <h3 class="py-6 text-gray-900 font-extrabold uppercase">
+                    Overdue Books.
+                </h3>
+                <div class="overflow-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>book</th>
+                                <th>member</th>
+                                <th>Expired</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="checkout in overdueBooks">
+                                <td>{{ checkout.id }}</td>
+                                <td>{{ checkout.book.title }}</td>
+                                <td>{{ checkout.member.user.name }}</td>
+                                <td>{{ checkout.check_out_date }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

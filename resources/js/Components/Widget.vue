@@ -2,7 +2,7 @@
 import BaseIcon from '@/Components/BaseIcon.vue';
 const props = defineProps({
     title: String,
-    value: String,
+    value: Number,
     icon: String,
 });
 </script>

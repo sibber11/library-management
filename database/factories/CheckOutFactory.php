@@ -19,7 +19,7 @@ class CheckOutFactory extends Factory
         return [
             'book_id' => \App\Models\Book::factory(),
             'member_id' => \App\Models\Member::factory(),
-            'check_out_date' => $this->faker->dateTimeBetween('-1 year', '-1 month'),
+            'check_out_date' => $this->faker->dateTimeBetween('-1 month', '-1 day'),
             'due_date' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
             'check_in_date' => function (array $attributes) {
                 return $this->faker->dateTimeBetween($attributes['check_out_date'], '+1 month');
