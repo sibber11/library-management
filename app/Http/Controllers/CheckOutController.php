@@ -46,9 +46,9 @@ class CheckOutController extends Controller
                         });
                 });
             })
+            ->orderBy('is_checked_in')
             ->paginate()
             ->withQueryString();
-
         return Inertia::render('Admin/CheckOut/Index', [
             'checkouts' => $checkouts,
         ]);
