@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $activeMembers = Member::active()->count();
         $expiredMembers = Member::expired()->count();
 
-        $overdueBooks = CheckOut::with(['member.user', 'book'])->checkedout()->whereDate('due_date', '<', Carbon::today())->get();
+        $overdueBooks = CheckOut::with(['member.user', 'book'])->checkedout()->whereDate('due_date', '<', Carbon::today())->paginate();
         // throw new Exception($issuedBooks);
         return Inertia::render('Dashboard', [
             'lineChart' => $lineChart,
@@ -94,13 +94,15 @@ class DashboardController extends Controller
             'datasets' => [
                 [
                     'label' => 'Checkouts per day',
-                    'borderColor' => 'rgb(75, 192, 192)',
+                    'borderColor' => 'rgb(249, 115, 22)',
                     'data' => $checkoutsPerDay->sortBy('date')->pluck('count'),
+                    'cubicInterpolationMode' => 'monotone'
                 ],
                 [
                     'label' => 'Reservations per day',
-                    'borderColor' => 'rgb(75, 45, 192)',
-                    'data' => $reservationsPerDay->sortBy('date')->pluck('count')
+                    'borderColor' => 'rgb(236, 72, 153)',
+                    'data' => $reservationsPerDay->sortBy('date')->pluck('count'),
+                    'cubicInterpolationMode' => 'monotone'
                 ]
             ]
         ];
