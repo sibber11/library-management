@@ -109,7 +109,7 @@ function reset() {
                             <div class="flex flex-row gap-2 justify-end">
                                 <Link :href="route('members.edit', member.id)" as="button"
                                     class="bg-gray-800 hover:bg-gray-700">
-                                Extend
+                                Edit
                                 </Link>
                                 <Link :href="route('members.destroy', member.id)" method="delete" as="button"
                                     class="bg-red-500 hover:bg-red-400">

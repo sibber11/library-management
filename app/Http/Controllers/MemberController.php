@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -66,9 +67,7 @@ class MemberController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Admin/Member/Fields', [
-            'users' => \App\Models\User::whereDoesntHave('member')->get(),
-        ]);
+        return Inertia::render('Admin/Member/Fields');
     }
 
     /**
@@ -76,10 +75,12 @@ class MemberController extends Controller
      */
     public function store(StoreMemberRequest $request)
     {
-        $member = new Member();
-        $member->user_id = $request->user_id;
-        $member->membership_due_date = now()->addMonths($request->validated('membership_duration'));
-        $member->save();
+        $user = new User();
+        $user->fill($request->validated());
+        $user->password = bcrypt($request->validated('password'));
+        $user->save();
+        $user->member->membership_due_date = now()->addMonths($request->validated('membership_duration'));
+        $user->member->save();
 
         return redirect()->route('members.index');
     }
@@ -104,8 +105,7 @@ class MemberController extends Controller
     public function edit(Member $member)
     {
         return Inertia::render('Admin/Member/Fields', [
-            'member' => $member,
-            'users' => [$member->user],
+            'member' => $member->load('user'),
         ]);
     }
 
@@ -114,6 +114,8 @@ class MemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, Member $member)
     {
+        $member->user->fill($request->validated());
+        $member->user->save();
         $member->extendMembership($request->integer('membership_duration'));
         return redirect()->route('members.index');
     }
@@ -123,8 +125,8 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
+        $member->user->delete();
         $member->delete();
-
         return redirect()->route('members.index');
     }
 }

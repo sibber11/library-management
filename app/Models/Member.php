@@ -64,6 +64,9 @@ class Member extends Model
      */
     public function extendMembership(int $months)
     {
+        if ($months <= 0) {
+            return;
+        }
         if ($this->membership_due_date < now()) {
             $this->membership_due_date = now();
         }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMemberRequest extends FormRequest
 {
@@ -22,8 +23,9 @@ class UpdateMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id'],
-            'membership_duration' => ['required', 'numeric', 'min:1', 'max:12']
+            'name' => ['required', 'string', 'max:64'],
+            'email' => ['required', 'email', 'max:64', Rule::unique('users', 'email')->ignore($this->member->user->id)],
+            'membership_duration' => ['required', 'numeric', 'min:0', 'max:12']
         ];
     }
 }
