@@ -87,7 +87,7 @@ class Book extends Model
 
     public function checkouts()
     {
-        return $this->hasMany(Checkout::class);
+        return $this->hasMany(CheckOut::class);
     }
 
     // public function genre()
