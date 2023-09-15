@@ -106,6 +106,20 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
+                        <template v-if="$page.props.auth.user.is_admin">
+                            <ResponsiveNavLink :href="route('members.index')" :active="route().current('members.index')">
+                                Members
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('books.index')" :active="route().current('books.index')">
+                                Books
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('check-outs.index')" :active="route().current('check-outs.index')">
+                                Checkouts
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('reservations.index')" :active="route().current('reservations.index')">
+                                Reservations
+                            </ResponsiveNavLink>
+                        </template>
                     </div>
 
                     <!-- Responsive Settings Options -->
