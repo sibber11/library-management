@@ -111,9 +111,12 @@ function reset() {
                             </div>
                         </td>
                     </tr>
+                    <tr v-if="books.data.length == 0">
+                        <td colspan="6" class="font-semibold text-center text-lg">No books available.</td>
+                    </tr>
                 </tbody>
             </table>
-            <Pagination :links="books.links" :only="['books']"/>
+            <Pagination :links="books.links" :only="['books']" />
         </section>
     </AuthenticatedLayout>
 </template>

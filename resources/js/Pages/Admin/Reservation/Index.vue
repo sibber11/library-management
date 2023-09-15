@@ -51,7 +51,7 @@ function reset() {
     searchValue.value = '';
     router.get(route('reservations.index'), {}, {
         preserveState: true,
-        replace: true
+        replace: trueD
     });
 }
 </script>
@@ -125,6 +125,9 @@ function reset() {
                             </div>
 
                         </td>
+                    </tr>
+                    <tr v-if="reservations.data.length == 0">
+                        <td colspan="5" class="font-semibold text-center text-lg">No reservations available.</td>
                     </tr>
                 </tbody>
             </table>

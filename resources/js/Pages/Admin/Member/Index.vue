@@ -118,6 +118,9 @@ function reset() {
                             </div>
                         </td>
                     </tr>
+                    <tr v-if="members.data.length == 0">
+                        <td colspan="6" class="font-semibold text-center text-lg">No members available.</td>
+                    </tr>
                 </tbody>
             </table>
             <Pagination :links="members.links" :only="['members']"/>

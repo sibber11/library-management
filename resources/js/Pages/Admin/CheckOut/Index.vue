@@ -125,6 +125,9 @@ function reset() {
 
                         </td>
                     </tr>
+                    <tr v-if="checkouts.data.length == 0">
+                        <td colspan="6" class="font-semibold text-center text-lg">No checkouts available.</td>
+                    </tr>
                 </tbody>
             </table>
             <Pagination :links="checkouts.links" :only="['checkouts']"/>
