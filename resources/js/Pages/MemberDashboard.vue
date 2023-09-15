@@ -25,16 +25,21 @@ const props = defineProps({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 flex flex-col gap-4">
                     <div class="text-gray-900">
-                        Name: {{ user.name }}
+                        <span class="font-bold">Name:</span> {{ user.name }}
                     </div>
                     <div class="text-gray-900">
-                        Email: {{ user.name }}
+                        <span class="font-bold">Email:</span> {{ user.email }}
                     </div>
                     <div class="text-gray-900">
-                        Membership Due Date: {{ user.member.membership_due_date }}
+                        <span class="font-bold">Membership Due Date:</span>
+                        {{ user.member.membership_due_date ?? 'N/A' }}
                     </div>
                     <div class="text-gray-900">
-                        Membership Status: {{ user.member.membership_status }}
+                        <span class="font-bold">Membership Status:</span>
+                        <Badge
+                            :class="{ 'text-red-800 bg-red-100': !user.member.membership_status, 'text-emerald-800 bg-emerald-100': user.member.membership_status }">
+                            {{ user.member.membership_status ? 'active' : 'expired' }}
+                        </Badge>
                     </div>
                 </div>
             </div>

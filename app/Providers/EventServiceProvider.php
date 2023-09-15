@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\BookCheckedIn;
 use App\Events\BookCheckedOut;
+use App\Listeners\CreateMemberOnRegistration;
 use App\Listeners\ReserveReservation;
 use App\Listeners\SendBookCheckedIn;
 use App\Listeners\SendBookCheckedOut;
@@ -23,6 +24,7 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+            CreateMemberOnRegistration::class
         ],
         BookCheckedIn::class => [
             ReserveReservation::class,
