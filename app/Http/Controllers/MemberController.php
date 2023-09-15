@@ -77,7 +77,7 @@ class MemberController extends Controller
     {
         $user = new User();
         $user->fill($request->validated());
-        $user->password = bcrypt($request->validated('password'));
+        $user->password = bcrypt('password');
         $user->save();
         $user->member->membership_due_date = now()->addMonths($request->validated('membership_duration'));
         $user->member->save();

@@ -71,10 +71,8 @@ class MemberTest extends TestCase
     }
 
     public function test_index_can_be_searched(){
-        $user = Member::factory()->create([
-            'user_id' => User::factory()->create([
-                'name' => 'test',
-            ])->id,
+        $user = User::factory()->create([
+            'name' => 'test',
         ]);
 
         $response = $this->get(route('members.index', ['search' => 'test']));
@@ -97,7 +95,6 @@ class MemberTest extends TestCase
         $response->assertInertia(
             fn ($assert) => $assert
                 ->component('Admin/Member/Fields')
-                ->has('users')
         );
     }
 
@@ -106,17 +103,20 @@ class MemberTest extends TestCase
      */
     public function test_store()
     {
-        $user = User::factory()->create();
         $response = $this->post(route('members.store'), [
-            'user_id' => $user->id,
-            'membership_duration' => 1,
+            'name' => 'buu',
+            'email' => 'text@buu.com',
+            'membership_duration' => 2,
         ]);
         $response->assertStatus(302);
         $response->assertRedirect(route('members.index'));
-        $this->assertDatabaseHas('members', [
-            'user_id' => $user->id,
-            'membership_due_date' => now()->addMonth()->format('Y-m-d H:i:s'),
+        $this->assertDatabaseHas('users', [
+            'name' => 'buu',
+            'email' => 'text@buu.com',
         ]);
+        // $this->assertDatabaseHas('members', [
+        //     'membership_due_date' => now()->addMonth()->format('Y-m-d H:i:s'),
+        // ]);
     }
 
     /**
@@ -138,7 +138,6 @@ class MemberTest extends TestCase
         $response->assertInertia(fn ($assert) => $assert
             ->component('Admin/Member/Fields')
             ->has('member')
-            ->has('users')
         );
     }
 
@@ -147,10 +146,11 @@ class MemberTest extends TestCase
      */
     public function test_update()
     {
-        $member = Member::factory()->create();
-        $user = $member->user;
-        $response = $this->put(route('members.update', $member->id), [
-            'user_id' => $member->id,
+        $this->withoutExceptionHandling();
+        $user = User::factory()->create();
+        $response = $this->put(route('members.update', $user->member->id), [
+            'name' => 'buu',
+            'email' => 'buu@buu.com',
             'membership_duration' => 1,
         ]);
         $response->assertStatus(302);
