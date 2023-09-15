@@ -74,6 +74,7 @@ class MemberTest extends TestCase
         $user = User::factory()->create([
             'name' => 'test',
         ]);
+        $user->member()->create();
 
         $response = $this->get(route('members.index', ['search' => 'test']));
         $response->assertStatus(200);
@@ -148,6 +149,7 @@ class MemberTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $user = User::factory()->create();
+        $user->member()->create();
         $response = $this->put(route('members.update', $user->member->id), [
             'name' => 'buu',
             'email' => 'buu@buu.com',
