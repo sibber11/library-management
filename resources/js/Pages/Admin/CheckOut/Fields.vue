@@ -66,7 +66,7 @@ function save() {
             <meta name="description" content="Your page description">
         </Head>
         <template #header>
-            <h1>Checkout {{ pageTitle }}</h1>
+            <h1 class="text-lg font-bold">Checkout {{ pageTitle }}</h1>
         </template>
 
         <section class="m-8 sm:m-6">
@@ -97,7 +97,8 @@ function save() {
                                         <span>{{ option.title }}</span>
                                         <Badge
                                             :class="{ 'bg-red-100 text-red-800': !option.available, 'bg-green-100 text-green-800': option.available }">
-                                            {{ form.member?.checkouts.includes(option.id)?'checked out':form.member?.reservations.includes(option.id)?'reserved':option.available ? option.available : 'out' }}
+                                            {{ form.member?.checkouts.includes(option.id)?'checked out':
+                                            form.member?.reservations.includes(option.id)?'reserved':option.available ? option.available : 'out' }}
                                         </Badge>
                                     </div>
                                 </template>
@@ -123,11 +124,14 @@ function save() {
                                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
                         </div>
                     </div>
-                    <div class="flex flex-wrap mb-6">
-                        <PrimaryButton type="submit"
+                    <div>
+                        <PrimaryButton type="submit" :disabled="form.processing || form.member?.checkouts.includes(form.book?.id)"
                             :class="{ 'bg-yellow-600': form.book == null ? false : form.book?.available ? false : true }">
                             {{ form.book == null ? 'checkout' : form.book?.available ? 'checkout' : 'reserve' }}
                         </PrimaryButton>
+                        <div class="text-sm text-red-700 py-2" v-show="form.member?.checkouts.includes(form.book?.id)">
+                            This book cannot be reserved by the current selected member.
+                        </div>
                     </div>
                 </form>
             </div>
