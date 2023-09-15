@@ -21,7 +21,7 @@ librarian would be able to manage books, visitors would book various books, also
     - [ ] Notification
 - [ ] Stock Management
 
-- [ ] Notification Management
+- [x] Notification Management
 
 A library management web application using Laravel can have various features depending on your requirements. Here are some basic features to consider:
 
@@ -39,7 +39,7 @@ A library management web application using Laravel can have various features dep
 
 - [x] Reports and Analytics: Generate reports on book availability, member activity, and other relevant statistics for librarians.
 
-- [ ] Notifications: Implement email or SMS notifications for due dates, reservations, and important library updates.
+- [x] Notifications: Implement email or SMS notifications for due dates, reservations, and important library updates.
 
 - [x] Admin Panel: Create a secure admin panel for librarians to manage all aspects of the library system, including user accounts and system settings.
 

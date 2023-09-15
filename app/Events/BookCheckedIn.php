@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Book;
+use App\Models\CheckOut;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -18,7 +19,7 @@ class BookCheckedIn
     /**
      * Create a new event instance.
      */
-    public function __construct(public Book $book)
+    public function __construct(public CheckOut $checkout)
     {
         //
     }

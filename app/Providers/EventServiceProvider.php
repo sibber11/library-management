@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Events\BookCheckedIn;
 use App\Events\BookCheckedOut;
 use App\Listeners\ReserveReservation;
+use App\Listeners\SendBookCheckedIn;
+use App\Listeners\SendBookCheckedOut;
 use App\Listeners\ServeReservation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Registered;
@@ -23,10 +25,12 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         BookCheckedIn::class => [
-            ReserveReservation::class
+            ReserveReservation::class,
+            SendBookCheckedIn::class
         ],
         BookCheckedOut::class => [
-            ServeReservation::class
+            ServeReservation::class,
+            SendBookCheckedOut::class
         ]
     ];
 

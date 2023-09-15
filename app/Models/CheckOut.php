@@ -56,7 +56,7 @@ class CheckOut extends Model
         $this->is_checked_in = true;
         $this->book->increment('available');
         $this->save();
-        BookCheckedIn::dispatch($this->book);
+        BookCheckedIn::dispatch($this);
     }
 
     public function extendDueDate(Carbon $date)
