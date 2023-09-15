@@ -65,7 +65,7 @@ defineProps({
                 <Widget title="Total Books" :value="inventory.totalBooks" :icon="mdiBook" :href="route('books.index')" />
                 <Widget title="Available Books" :value="inventory.availableBooks" :icon="mdiBookOpen"
                     :href="route('books.index')" />
-                <Widget title="Total Issued Books" :value="inventory.issuedBooks" icon="mdiBook"
+                <Widget title="Total Issued Books" :value="inventory.issuedBooks" :icon="mdiBook"
                     :href="route('check-outs.index')" />
                 <Widget title="Total Reservations" :value="inventory.reservations" :icon="mdiBookOpen"
                     :href="route('reservations.index')" />
