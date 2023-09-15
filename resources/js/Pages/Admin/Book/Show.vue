@@ -38,7 +38,7 @@ const props = defineProps({
             <div class="bg-white rounded-lg shadow-md my-4 flex md:flex-nowrap flex-wrap">
                 <div class="md:w-1/2 w-full p-6 rounded overflow-auto">
                     <!-- <div class="w-full h-full bg-gray-200">&nbsp;</div> -->
-                    <img src="https://picsum.photos/450?grayscale" alt="none" >
+                    <img src="https://picsum.photos/450?grayscale" alt="none">
                 </div>
                 <div class="m-auto md:w-1/2 w-full p-6">
                     <h2 class="text-lg font-bold">Book Details</h2>
@@ -52,7 +52,9 @@ const props = defineProps({
             </div>
         </div>
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8" v-if="reservations.data">
-            <h2 class="text-lg font-semibold p-2 my-2 bg-white rounded shadow">Reservations</h2>
+            <h3 class="py-6 text-gray-900 font-extrabold uppercase">
+                Reservations
+            </h3>
             <table>
                 <thead>
                     <tr>
@@ -71,12 +73,17 @@ const props = defineProps({
                             </Badge>
                         </td>
                     </tr>
+                    <tr v-if="reservations.data.length == 0">
+                        <td colspan="3" class="font-semibold text-center text-lg">No Reservations for this book.</td>
+                    </tr>
                 </tbody>
             </table>
             <Pagination :links="checkouts.links" />
         </div>
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8" v-if="checkouts.data">
-            <h2 class="text-lg font-semibold p-2 my-2 bg-white rounded shadow">Checkout History</h2>
+            <h3 class="py-6 text-gray-900 font-extrabold uppercase">
+                Checkout History
+            </h3>
             <table>
                 <thead>
                     <tr>
@@ -102,6 +109,9 @@ const props = defineProps({
                         <td>
                             {{ checkout.check_in_date }}
                         </td>
+                    </tr>
+                    <tr v-if="checkouts.data.length == 0">
+                        <td colspan="5" class="font-semibold text-center text-lg">No Checkout history for this book.</td>
                     </tr>
                 </tbody>
             </table>
